@@ -1,0 +1,23 @@
+from pyspark.sql import*
+from pyspark.sql.types import*
+from pyspark.sql.functions import*
+spark = SparkSession.builder.master(['local[*]').appName('test').getOrCreate()
+sfOptions ={
+  'sfURL':'your_account_url.snowflakecomputing.com',
+  'sfDatabase': 'your_database_name',
+  'sfWarehouse': 'COMPUTE_WH',
+  'sfSchema': 'PUBLIC',
+  'sfUser': 'your_snowflake_user_name',
+  'sfPassword': 'snowflake_password'
+  }
+
+df=spark.read.format('snowflake')\
+  .options(**sfoptions)\
+  .option('query','select * from table_name')\
+  .load()
+
+df.show()
+ 
+
+
+                                 
