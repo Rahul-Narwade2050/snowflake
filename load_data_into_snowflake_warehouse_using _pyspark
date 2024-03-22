@@ -1,0 +1,23 @@
+from pyspark.sql import *
+from pyspark.sql.functions import *
+
+spark = SparkSession.builder.master("local[*]").appName("test").getOrCreate()
+df=spark.read.format('csv').option('header',True).option('inferSchema',True).load('C:\\big data\\datasets\\donations.csv')
+
+ndf=df.withColumn('today',current_date()).withColumn('Months',date_format(col('today'),'MM'))
+
+sfOptions ={
+  'sfURL':'your_account_url.snowflakecomputing.com',
+  'sfDatabase': 'your_database_name',
+  'sfWarehouse': 'COMPUTE_WH',
+  'sfSchema': 'PUBLIC',
+  'sfUser': 'your_snowflake_user_name',
+  'sfPassword': 'snowflake_password'
+  }
+
+ndf.write \
+    .format("snowflake") \
+    .options(**sfOptions) \
+    .option("dbtable", "donation") \
+    .mode("overwrite") \
+    .save()
